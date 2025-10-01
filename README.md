@@ -2,43 +2,36 @@
 # 🔒 FirewallPi + NASPi: Secure Home Network & Storage Solution
 
 ## 📌 Overview
+This project demonstrates how to build a **secure, VLAN-aware home network** with a Raspberry Pi firewall and a dedicated Raspberry Pi NAS, using **OpenWRT**, **Netgear GS108E VLAN switch**, **Linksys EA6100 (AP mode)**, and **OpenMediaVault (OMV 7)**.  
 
-This project demonstrates how to build a **secure, VLAN-aware home network** with a Raspberry Pi firewall and a dedicated Raspberry Pi NAS, using **OpenWRT**, **Netgear GS108E VLAN switch**, **Linksys EA6100 (AP mode)**, and **OpenMediaVault (OMV 7)**.
-
-The goal:
-
-* Segment WAN/LAN traffic with VLANs
-* Route all traffic through a **Raspberry Pi firewall**
-* Provide **Wi-Fi access** via a dedicated AP in bridge mode
-* Deploy a **NAS (Network Attached Storage)** with SMB/CIFS for file sharing across the LAN
+The goal:  
+- Segment WAN/LAN traffic with VLANs  
+- Route all traffic through a **Raspberry Pi firewall**  
+- Provide **Wi-Fi access** via a dedicated AP in bridge mode  
+- Deploy a **NAS (Network Attached Storage)** with SMB/CIFS for file sharing across the LAN  
 
 ---
 
 ## 🏗️ Architecture
-
 **Hardware Used**
-
-* Raspberry Pi 4 (FirewallPi, running OpenWRT)
-* Raspberry Pi 4 (NASPi, running OpenMediaVault 7)
-* Netgear GS108E Plus switch (VLAN support)
-* Linksys EA6100 Wi-Fi Router (in AP/Bridge mode)
-* Starlink Ethernet Adapter (WAN uplink)
-* External HDD/SSD for NAS storage
+- Raspberry Pi 4 (FirewallPi, running OpenWRT)  
+- Raspberry Pi 4 (NASPi, running OpenMediaVault 7)  
+- Netgear GS108E Plus switch (VLAN support)  
+- Linksys EA6100 Wi-Fi Router (in AP/Bridge mode)  
+- Starlink Ethernet Adapter (WAN uplink)  
+- External HDD/SSD for NAS storage  
 
 **Network Layout**
-
-* **VLAN 10 (WAN)** → Starlink Internet → FirewallPi WAN (eth0.10)
-* **VLAN 20 (LAN)** → FirewallPi LAN (eth0.20) → Switch → EA6100 (Wi-Fi AP) + NASPi
-* All clients get DHCP leases from FirewallPi on VLAN 20
+- **VLAN 10 (WAN)** → Starlink Internet → FirewallPi WAN (eth0.10)  
+- **VLAN 20 (LAN)** → FirewallPi LAN (eth0.20) → Switch → EA6100 (Wi-Fi AP) + NASPi  
+- All clients get DHCP leases from FirewallPi on VLAN 20  
 
 ---
 
 ## 🔧 Configuration Steps
 
 ### 1. FirewallPi (OpenWRT)
-
-* Defined VLAN subinterfaces:
-
+- Defined VLAN subinterfaces:
   ```sh
   config device
       option name 'eth0.10'
@@ -51,7 +44,7 @@ The goal:
       option type '8021q'
       option ifname 'eth0'
       option vid '20'
-  ```
+```
 
 * Configured interfaces:
 
@@ -107,7 +100,7 @@ The goal:
 * Shared folder:
 
   * Name: `shared`
-  * Path: `/srv/dev-disk-by-uuid-xxxx/shared/`
+  * Path: `/srv/dev-disk-by-uuid-xxxx/shared`
   * Permissions: RW for `userNas`, RO for guests
 
 * Verified share from client Pi:
@@ -118,9 +111,11 @@ The goal:
 
 ---
 
-## 🌐 Service Discovery (Optional)
+## 🌐 Service Discovery
 
-To make NAS discoverable on Windows networks, `wsdd` was enabled via a custom **systemd unit file**:
+### Windows
+
+To make NAS discoverable on Windows networks, `wsdd` was enabled via a custom systemd unit file:
 
 ```ini
 [Unit]
@@ -139,12 +134,40 @@ RestartSec=2s
 WantedBy=multi-user.target
 ```
 
-Enabled with:
+Enable with:
 
-```sh
+```bash
 sudo systemctl daemon-reload
 sudo systemctl enable --now wsdd
 ```
+
+### macOS
+
+macOS uses **Bonjour (mDNS)** for discovery. Enable Avahi on the NASPi:
+
+```bash
+sudo apt install -y avahi-daemon
+sudo systemctl enable --now avahi-daemon
+```
+
+Once enabled, NASPi appears in Finder under **Network**.
+
+### Linux
+
+Most Linux desktops use Avahi as well:
+
+```bash
+sudo apt install -y avahi-daemon libnss-mdns
+sudo systemctl enable --now avahi-daemon
+```
+
+Test with:
+
+```bash
+avahi-browse -at
+```
+
+Your NASPi will show up in Linux file managers under **Network**.
 
 ---
 
@@ -152,16 +175,8 @@ sudo systemctl enable --now wsdd
 
 * Clients (wired + Wi-Fi) receive IPs from FirewallPi
 * Internet access works seamlessly via Starlink uplink
-* Local NAS is accessible at `\\naspi\` from Windows/macOS/Linux
+* Local NAS is accessible at `\\naspi\mileHighImagery` from Windows/macOS/Linux
 * VLAN segmentation isolates WAN/LAN traffic securely
-
----
-
-## 📸 Screenshots
-
-* FirewallPi VLAN configs
-* OMV 7 Web UI with SMB/CIFS enabled
-* Successful `smbclient` test
 
 ---
 
@@ -170,3 +185,5 @@ sudo systemctl enable --now wsdd
 * Add Pi-hole or AdGuard for network-wide DNS filtering
 * Enable WireGuard VPN for remote access
 * Configure automatic NAS backups to cloud storage
+
+---
