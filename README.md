@@ -167,7 +167,7 @@ Test with:
 avahi-browse -at
 ```
 
-Your NASPi will show up in Linux file managers under **Network**.
+NASPi will show up in Linux file managers under **Network**.
 
 ---
 
@@ -175,7 +175,7 @@ Your NASPi will show up in Linux file managers under **Network**.
 
 * Clients (wired + Wi-Fi) receive IPs from FirewallPi
 * Internet access works seamlessly via Starlink uplink
-* Local NAS is accessible at `\\naspi\mileHighImagery` from Windows/macOS/Linux
+* Local NAS is accessible at `\\naspi\shared` from Windows/macOS/Linux
 * VLAN segmentation isolates WAN/LAN traffic securely
 
 ---
