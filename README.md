@@ -44,7 +44,7 @@ The goal:
       option type '8021q'
       option ifname 'eth0'
       option vid '20'
-```
+  ```
 
 * Configured interfaces:
 
