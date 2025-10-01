@@ -1,3 +1,10 @@
+<p align="center">
+  <img src="hero_banner.png" width="100%" alt="FirewallPi + NASPi banner" />
+  <b><h2>Network Topology</b></h2>
+  <img src="topology_diagram.png" width="100%" alt="Topology Diagram" />
+  <b><h2>Network Flow</b></h2>
+  <img src="flow_diagram.png" width="100%" alt="Flow Diagram" />
+</p>
 
 # 🔒 FirewallPi + NASPi: Secure Home Network & Storage Solution
 
